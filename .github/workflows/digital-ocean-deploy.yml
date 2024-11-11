@@ -19,10 +19,10 @@ on:
         description: "Digital Ocean username"
         required: true
         type: string
-      docker_port_mapping:
-        description: 'Port that is used for mapping'
+      use_docker_port_mapping:
+        description: 'Use 8018 port for mapping'
         required: false
-        type: number
+        type: boolean
     secrets:
       do_ssh_key:
         description: "Docker Hub token"
@@ -57,12 +57,12 @@ jobs:
             # Pull a new container
             docker image pull $(echo ${{ inputs.image_name }})
             # Run a new container from a new image
-            if [$(echo ${{ inputs.docker_port_mapping }})]
+            if [$(echo ${{ inputs.use_docker_port_mapping }})]
             then
               docker run -d \
               --restart always \
               --name $(echo ${{ inputs.docker_container_name }}) \
-              -p $(echo ${{ inputs.docker_port_mapping }}):8000 \
+              -p 8018:8000 \
               $(echo ${{ inputs.image_name }})
             else 
               docker run -d \

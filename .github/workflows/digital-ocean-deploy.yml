@@ -7,7 +7,7 @@ on:
         description: "Image Name"
         required: true
         type: string
-      container_name:
+      docker_container_name:
         description: "Docker container Name"
         required: true
         type: string
@@ -45,14 +45,14 @@ jobs:
           script: |
 
             # Stop running container
-            docker container stop $(echo ${{ inputs.container_name  }})
+            docker container stop $(echo ${{ inputs.docker_container_name  }})
             # Remove old container
-            docker container rm -f $(echo ${{ inputs.container_name  }})
+            docker container rm -f $(echo ${{ inputs.docker_container_name  }})
             # Pull a new container
             docker image pull $(echo $IMAGE_NAME)
             # Run a new container from a new image
             docker run -d \
             --restart always \
-            --name $(echo ${{ inputs.container_name }}) \
+            --name $(echo ${{ inputs.docker_container_name }}) \
             -p 8018:8000 \
             $(echo ${{ inputs.image_name }})

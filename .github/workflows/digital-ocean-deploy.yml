@@ -55,7 +55,7 @@ jobs:
             # Remove old images
             docker images -a | grep "$(echo ${{ inputs.docker_container_name }})" | awk '{print $1":"$2}' | xargs docker rmi
             # Pull a new container
-            docker image pull $(echo $IMAGE_NAME)
+            docker image pull $(echo ${{ inputs.image_name }})
             # Run a new container from a new image
             if [$(echo ${{ inputs.docker_port_mapping }})] then
               docker run -d \

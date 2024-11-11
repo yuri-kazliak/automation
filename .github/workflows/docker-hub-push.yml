@@ -21,7 +21,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build_and_push:
+  dockerhub-push:
     runs-on: ubuntu-latest
     if: ${{ github.ref_name }}
     steps:

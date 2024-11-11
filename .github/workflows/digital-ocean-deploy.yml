@@ -1,0 +1,58 @@
+name: digital-ocean-deploy
+
+on:
+  workflow_call:
+    inputs:
+      image_name:
+        description: "Image Name"
+        required: true
+        type: string
+      container_name:
+        description: "Docker container Name"
+        required: true
+        type: string
+      do_host:
+        description: "Digital Ocean host"
+        required: true
+        type: string
+      do_username:
+        description: "Digital Ocean username"
+        required: true
+        type: string
+    secrets:
+      do_ssh_key:
+        description: "Docker Hub token"
+        required: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  digital-ocean-deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref_name }}
+
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@v2
+      - name: Deploy to Digital Ocean droplet via SSH action
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ inputs.do_host }}
+          username: ${{ inputs.do_username }}
+          key: ${{ secrets.do_ssh_key }}
+          script: |
+
+            # Stop running container
+            docker container stop $(echo ${{ inputs.container_name  }})
+            # Remove old container
+            docker container rm -f $(echo ${{ inputs.container_name  }})
+            # Pull a new container
+            docker image pull $(echo $IMAGE_NAME)
+            # Run a new container from a new image
+            docker run -d \
+            --restart always \
+            --name $(echo ${{ inputs.container_name }}) \
+            -p 8018:8000 \
+            $(echo ${{ inputs.image_name }})

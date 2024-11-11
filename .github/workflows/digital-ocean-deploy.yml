@@ -57,7 +57,8 @@ jobs:
             # Pull a new container
             docker image pull $(echo ${{ inputs.image_name }})
             # Run a new container from a new image
-            if [$(echo ${{ inputs.docker_port_mapping }})] then
+            if [$(echo ${{ inputs.docker_port_mapping }})]
+            then
               docker run -d \
               --restart always \
               --name $(echo ${{ inputs.docker_container_name }}) \

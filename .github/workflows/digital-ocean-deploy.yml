@@ -22,7 +22,7 @@ on:
       docker_port_mapping:
         description: 'Port that is used for mapping'
         required: false
-        type: string
+        type: number
     secrets:
       do_ssh_key:
         description: "Docker Hub token"

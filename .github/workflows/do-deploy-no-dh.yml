@@ -40,6 +40,10 @@ jobs:
     steps:
       - name: Checkout files
         uses: actions/checkout@v2
+      - name: read var
+        run: |
+          echo "secrets.do_ssh_key  ${{ secrets.do_ssh_key }}"
+          echo "inputs.do_host ${{ inputs.do_host }}"
       - name: Deploy to Digital Ocean droplet via SSH action
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -49,15 +53,15 @@ jobs:
           script: |
 
             # Stop running container
-            docker container stop $(echo ${{ inputs.docker_container_name  }})
+            docker container stop ${{ inputs.docker_container_name  }}
             # Remove old container
-            docker container rm -f $(echo ${{ inputs.docker_container_name  }})
+            docker container rm -f ${{ inputs.docker_container_name  }}
             # Remove old images
-            docker images -a | grep "$(echo ${{ inputs.docker_container_name }})" | awk '{print $1":"$2}' | xargs docker rmi
-            cd /$(echo ${{ inputs.do_username}})/repos
-            rm -rf $(echo ${{ inputs.git_project_name }})
+            docker images -a | grep "${{ inputs.docker_container_name }}" | awk '{print $1":"$2}' | xargs docker rmi
+            cd /${{ inputs.do_username}}/repos
+            rm -rf ${{ inputs.git_project_name }}
             git clone https://github.com/yuri-kazliak/${{ inputs.git_project_name }}.git
-            cd $(echo ${{ inputs.git_project_name }})
+            cd ${{ inputs.git_project_name }}
             docker compose up -d
             # # Pull a new container
             # docker image pull $(echo ${{ inputs.image_name }})

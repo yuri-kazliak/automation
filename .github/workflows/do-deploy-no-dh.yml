@@ -58,7 +58,8 @@ jobs:
             # docker container rm -f ${{ inputs.docker_container_name }}
             # # Remove old images
             # docker images -a | grep "${{ inputs.docker_container_name }}" | awk '{print $1":"$2}' | xargs docker rmi
-            cd /${{ inputs.do_username }}/repos
+            mkdir -p repos
+            cd repos
             rm -rf ${{ inputs.git_project_name }}
             git clone https://github.com/yuri-kazliak/${{ inputs.git_project_name }}.git
             cd ${{ inputs.git_project_name }}

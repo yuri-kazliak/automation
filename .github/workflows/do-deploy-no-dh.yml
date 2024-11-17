@@ -62,8 +62,7 @@ jobs:
             cd repos
             rm -rf ${{ inputs.git_project_name }}
             # git clone https://github.com/yuri-kazliak/${{ inputs.git_project_name }}.git
-            # git clone git@github.com:yuri-kazliak/${{ inputs.git_project_name }}.git
-            git clone https://yuri-kazliak:1nbadm00d@github.com/yuri-kazliak/${{ inputs.git_project_name }}.git
+            git clone git@github.com:yuri-kazliak/${{ inputs.git_project_name }}.git
             cd ${{ inputs.git_project_name }}
             docker compose up -d
             # # Pull a new container

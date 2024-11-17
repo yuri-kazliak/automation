@@ -44,6 +44,8 @@ jobs:
         run: |
           echo "secrets.do_ssh_key  ${{ secrets.do_ssh_key }}"
           echo "inputs.do_host ${{ inputs.do_host }}"
+          echo "inputs.docker_container_name ${{ inputs.docker_container_name }}"
+          echo "inputs.do_username ${{ inputs.do_username }}"
       - name: Deploy to Digital Ocean droplet via SSH action
         uses: appleboy/ssh-action@v1.0.3
         with:

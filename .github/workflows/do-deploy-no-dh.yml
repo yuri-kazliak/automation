@@ -52,7 +52,13 @@ jobs:
             mkdir -p repos
             cd repos
             #Delete previous project folder
-            rm -rf ${{ inputs.git_project_name }}
+            if [ -d "${{ inputs.git_project_name }}" ]; then
+              cd ${{ inputs.git_project_name }}
+              docker compose down --rmi all
+              cd ../
+              rm -rf ${{ inputs.git_project_name }}
+            fi
+
             #Clone a new one
             git clone git@github.com:yuri-kazliak/${{ inputs.git_project_name }}.git
             cd ${{ inputs.git_project_name }}

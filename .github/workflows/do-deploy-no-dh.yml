@@ -42,8 +42,6 @@ jobs:
         uses: actions/checkout@v2
       - name: read var
         run: |
-          echo "secrets.do_ssh_key  ${{ secrets.do_ssh_key }}"
-          echo "inputs.do_host ${{ inputs.do_host }}"
           echo "inputs.docker_container_name ${{ inputs.docker_container_name }}"
           echo "inputs.do_username ${{ inputs.do_username }}"
       - name: Deploy to Digital Ocean droplet via SSH action
@@ -54,13 +52,13 @@ jobs:
           key: ${{ secrets.do_ssh_key }}
           script: |
 
-            # Stop running container
-            docker container stop ${{ inputs.docker_container_name  }}
-            # Remove old container
-            docker container rm -f ${{ inputs.docker_container_name  }}
-            # Remove old images
-            docker images -a | grep "${{ inputs.docker_container_name }}" | awk '{print $1":"$2}' | xargs docker rmi
-            cd /${{ inputs.do_username}}/repos
+            # # Stop running container
+            # docker container stop ${{ inputs.docker_container_name }}
+            # # Remove old container
+            # docker container rm -f ${{ inputs.docker_container_name }}
+            # # Remove old images
+            # docker images -a | grep "${{ inputs.docker_container_name }}" | awk '{print $1":"$2}' | xargs docker rmi
+            cd /${{ inputs.do_username }}/repos
             rm -rf ${{ inputs.git_project_name }}
             git clone https://github.com/yuri-kazliak/${{ inputs.git_project_name }}.git
             cd ${{ inputs.git_project_name }}

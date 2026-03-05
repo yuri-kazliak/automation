@@ -45,69 +45,12 @@ jobs:
     steps:
       - name: Checkout files
         uses: actions/checkout@v2
-      - name: Deploy to Digital Ocean droplet via SSH action
-        uses: appleboy/ssh-action@v1.0.3
 
-        with:
-          host: ${{ inputs.do_host }}
-          username: ${{ inputs.do_username }}
-          key: ${{ secrets.do_ssh_key }}
+      - name: Debug DO_SSHKEY
+        run: |
+          echo "DO_SSHKEY length: ${#{{ secrets.do_ssh_key }} }"
+          echo "DO_SSHKEY starts with: $(echo "${{ secrets.do_ssh_key }}" | head -c 10)***"
 
-          script: |
-
-            # Stop running container
-            docker container stop $(echo ${{ inputs.docker_container_name  }})
-            # Remove old container
-            docker container rm -f $(echo ${{ inputs.docker_container_name  }})
-            # Remove old images
-            docker images -a | grep "$(echo ${{ inputs.docker_container_name }})" | awk '{print $1":"$2}' | xargs docker rmi
-            # Pull a new container
-            docker image pull $(echo ${{ inputs.image_name }})
-            # Run a new container from a new image
-            if [ ${{ inputs.docker_port_mapping }} ]
-            then
-              docker run -d \
-              --restart always \
-              --name $(echo ${{ inputs.docker_container_name }}) \
-              -p $(echo ${{ inputs.docker_port_mapping }}):8000 \
-              $(echo ${{ inputs.image_name }})
-            else 
-              docker run -d \
-              --restart always \
-              --name $(echo ${{ inputs.docker_container_name }}) \
-              $(echo ${{ inputs.image_name }})
-            fi
-
-# name: digital-ocean-deploy
-
-# on:
-#   workflow_call:
-#     inputs:
-#       image_name:
-#         required: true
-#         type: string
-#       docker_container_name:
-#         required: true
-#         type: string
-#       do_host:
-#         required: true
-#         type: string
-#       do_username:
-#         required: true
-#         type: string
-#       docker_port_mapping:
-#         required: false
-#         type: number
-#     secrets:
-#       do_ssh_key:
-#         required: true
-
-# jobs:
-#   digital-ocean-deploy:
-#     runs-on: ubuntu-latest
-#     timeout-minutes: 10
-
-#     steps:
 #       - name: Deploy via SSH
 #         uses: appleboy/ssh-action@v1.0.3
 #         with:

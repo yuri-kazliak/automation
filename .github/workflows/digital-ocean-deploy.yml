@@ -48,8 +48,8 @@ jobs:
 
       - name: Debug DO_USERNAME
         run: |
-          DO_USERNAME="${{ secrets.do_username }}"
-          echo "DO_USERNAME starts with: ${DO_USERNAME}"
+          DO_USERNAME="${{ inputs.do_username }}"
+          echo "DO_USERNAME: ${DO_USERNAME}"
 
       - name: Debug DO_SSHKEY
         run: |

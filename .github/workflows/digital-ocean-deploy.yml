@@ -48,8 +48,9 @@ jobs:
 
       - name: Debug DO_SSHKEY
         run: |
-          echo "DO_SSHKEY length: ${#{{ secrets.do_ssh_key }} }"
-          echo "DO_SSHKEY starts with: $(echo "${{ secrets.do_ssh_key }}" | head -c 10)***"
+          DO_SSHKEY="${{ secrets.do_ssh_key }}"
+          echo "DO_SSHKEY length: ${#DO_SSHKEY}"
+          echo "DO_SSHKEY starts with: ${DO_SSHKEY:0:10}***"
 
 #       - name: Deploy via SSH
 #         uses: appleboy/ssh-action@v1.0.3

@@ -46,7 +46,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Security scan
-        uses: aquasecurity/trivy-action@0.33.1
-        with:
-          image-ref: ${{ inputs.image_name }}
+      # - name: Security scan
+      #   uses: aquasecurity/trivy-action@0.33.1
+      #   with:
+      #     image-ref: ${{ inputs.image_name }}

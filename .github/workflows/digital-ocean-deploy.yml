@@ -6,9 +6,6 @@ on:
       image_name:
         required: true
         type: string
-      image_digest:
-        required: true
-        type: string
       docker_container_name:
         required: true
         type: string
@@ -38,7 +35,7 @@ jobs:
           username: ${{ inputs.do_username }}
           key: ${{ secrets.do_ssh_key }}
           script: |
-            IMAGE="${{ inputs.image_name }}@${{ inputs.image_digest }}"
+            IMAGE="${{ inputs.image_name }}"
             NEW_CONTAINER="${{ inputs.docker_container_name }}-new"
             OLD_CONTAINER="${{ inputs.docker_container_name }}"
 
@@ -48,7 +45,7 @@ jobs:
             echo "Start new container"
             docker run -d \
               --name $NEW_CONTAINER \
-              -p ${{ inputs.docker_port_mapping }}:8000 \
+              -p $(if [ "${{ inputs.docker_port_mapping }}" ]; then echo ${{ inputs.docker_port_mapping }}; else echo 8000; fi):8000 \
               --restart always \
               $IMAGE
 

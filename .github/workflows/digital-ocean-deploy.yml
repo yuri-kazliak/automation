@@ -6,27 +6,21 @@ on:
       image_name:
         required: true
         type: string
-
       image_digest:
         required: true
         type: string
-
       docker_container_name:
         required: true
         type: string
-
       do_host:
         required: true
         type: string
-
       do_username:
         required: true
         type: string
-
       docker_port_mapping:
         required: false
         type: number
-
     secrets:
       do_ssh_key:
         required: true
@@ -34,18 +28,16 @@ on:
 jobs:
   digital-ocean-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
-
         with:
           host: ${{ inputs.do_host }}
           username: ${{ inputs.do_username }}
           key: ${{ secrets.do_ssh_key }}
-
           script: |
-
             IMAGE="${{ inputs.image_name }}@${{ inputs.image_digest }}"
             NEW_CONTAINER="${{ inputs.docker_container_name }}-new"
             OLD_CONTAINER="${{ inputs.docker_container_name }}"
@@ -57,6 +49,7 @@ jobs:
             docker run -d \
               --name $NEW_CONTAINER \
               -p ${{ inputs.docker_port_mapping }}:8000 \
+              --restart always \
               $IMAGE
 
             echo "Wait for container to boot"

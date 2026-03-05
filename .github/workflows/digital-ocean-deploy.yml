@@ -46,52 +46,41 @@ jobs:
       - name: Checkout files
         uses: actions/checkout@v2
 
-      - name: Debug DO_USERNAME
-        run: |
-          DO_USERNAME="${{ inputs.do_username }}"
-          echo "DO_USERNAME: ${DO_USERNAME}"
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ inputs.do_host }}
+          username: ${{ inputs.do_username }}
+          key: ${{ secrets.do_ssh_key }}
+          script: |
+            IMAGE="${{ inputs.image_name }}"
+            NEW_CONTAINER="${{ inputs.docker_container_name }}-new"
+            OLD_CONTAINER="${{ inputs.docker_container_name }}"
 
-      - name: Debug DO_SSHKEY
-        run: |
-          DO_SSHKEY="${{ secrets.do_ssh_key }}"
-          echo "DO_SSHKEY length: ${#DO_SSHKEY}"
-          echo "DO_SSHKEY starts with: ${DO_SSHKEY:0:10}***"
+            echo "Pull image"
+            docker pull $IMAGE
 
-#       - name: Deploy via SSH
-#         uses: appleboy/ssh-action@v1.0.3
-#         with:
-#           host: ${{ inputs.do_host }}
-#           username: ${{ inputs.do_username }}
-#           key: ${{ secrets.do_ssh_key }}
-#           script: |
-#             IMAGE="${{ inputs.image_name }}"
-#             NEW_CONTAINER="${{ inputs.docker_container_name }}-new"
-#             OLD_CONTAINER="${{ inputs.docker_container_name }}"
+            echo "Start new container"
+            docker run -d \
+              --name $NEW_CONTAINER \
+              -p $(if [ "${{ inputs.docker_port_mapping }}" ]; then echo ${{ inputs.docker_port_mapping }}; else echo 8000; fi):8000 \
+              --restart always \
+              $IMAGE
 
-#             echo "Pull image"
-#             docker pull $IMAGE
+            echo "Wait for container to boot"
+            sleep 10
 
-#             echo "Start new container"
-#             docker run -d \
-#               --name $NEW_CONTAINER \
-#               -p $(if [ "${{ inputs.docker_port_mapping }}" ]; then echo ${{ inputs.docker_port_mapping }}; else echo 8000; fi):8000 \
-#               --restart always \
-#               $IMAGE
+            if [ "$(docker inspect -f '{{.State.Running}}' $NEW_CONTAINER)" != "true" ]; then
+              echo "New container failed to start. Rolling back."
+              docker rm -f $NEW_CONTAINER
+              exit 1
+            fi
 
-#             echo "Wait for container to boot"
-#             sleep 10
+            echo "Stop old container"
+            docker rm -f $OLD_CONTAINER || true
 
-#             if [ "$(docker inspect -f '{{.State.Running}}' $NEW_CONTAINER)" != "true" ]; then
-#               echo "New container failed to start. Rolling back."
-#               docker rm -f $NEW_CONTAINER
-#               exit 1
-#             fi
+            echo "Rename new container"
+            docker rename $NEW_CONTAINER $OLD_CONTAINER
 
-#             echo "Stop old container"
-#             docker rm -f $OLD_CONTAINER || true
-
-#             echo "Rename new container"
-#             docker rename $NEW_CONTAINER $OLD_CONTAINER
-
-#             echo "Cleanup old images"
-#             docker image prune -f
+            echo "Cleanup old images"
+            docker image prune -f

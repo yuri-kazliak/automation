@@ -46,6 +46,11 @@ jobs:
       - name: Checkout files
         uses: actions/checkout@v2
 
+      - name: Debug DO_USERNAME
+        run: |
+          DO_USERNAME="${{ secrets.do_username }}"
+          echo "DO_USERNAME starts with: ${DO_USERNAME}"
+
       - name: Debug DO_SSHKEY
         run: |
           DO_SSHKEY="${{ secrets.do_ssh_key }}"
